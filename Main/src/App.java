@@ -1,39 +1,25 @@
 import java.util.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class App {
     public static void main(String[] args) throws Exception {
         BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         Stack<Integer> stack = new Stack<>();
-        int N = Integer.parseInt(bf.readLine());
-        for (int i = 0; i < N; i++) {
-            String[] arr = bf.readLine().split(" ");
-            int first = Integer.parseInt(arr[0]);
-            int second;
-            int top;
-            switch (first) {
-                case 1:
-                    second = Integer.parseInt(arr[1]);
-                    stack.push(second);
-                    break;
-                case 2:
-                    top = (stack.isEmpty()) ? -1 : stack.pop();
-                    System.out.println(top);
-                    break;
-                case 3:
-                    System.out.println(stack.size());
-                    break;
-                case 4:
-                    int ans = (stack.isEmpty()) ? 1 : 0;
-                    System.out.println(ans);
-                    break;
-                default:
-                    top = (stack.isEmpty()) ? -1 : stack.peek();
-                    System.out.println(top);
+        int K = Integer.parseInt(bf.readLine());
+        int N;
+        int sum = 0;
+        for (int i = 0; i < K; i++) {
+            N = Integer.parseInt(bf.readLine());
+            if (N == 0) {
+                stack.pop();
+            } else {
+                stack.push(N);
             }
         }
-        bf.close();
+        while (!stack.isEmpty()) {
+            sum += stack.pop();
+        }
+        System.out.println(sum);
     }
 }
