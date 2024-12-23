@@ -17,29 +17,44 @@ public class App {
         // 옆줄로 빠질 Stack
         Stack<Integer> stack = new Stack<>();
 
-        // ans = 1일때 nice 출력
+        int cnt = 1;
         int ans = 1;
-
-        // 현재 순서가 N이 아니면 계속 돌기
-        for (int i = 0; i < N; i++) {
-            if (arr.get(i) == i + 1) {
-                continue;
-            }
-            if (stack.size() != 0) {
-                // 1. 스택이 존재하고 , top이 cnt 면 pop
-                if (stack.peek() == i + 1) {
-                    stack.pop();
-                } else {// 2. 스택이 존재하고 , top이 cnt 아니면
-                    if (stack.peek() < arr.get(i)) {
-                        System.out.println("Sad");
+        // 깔끔하게 안비어 있으면 계속 돌아라
+        while (arr.size() != 0 || !stack.isEmpty()) {
+            if (arr.size() != 0) {
+                if (arr.get(0) == cnt) {
+                    // System.out.println("줄에 순서가 알맞아서 통과 : " + arr.get(0));
+                    arr.remove(0);
+                    cnt++;
+                    continue;
+                }
+                if (stack.isEmpty()) {
+                    stack.push(arr.get(0));
+                    // System.out.println("스택 push : " + arr.get(0));
+                    arr.remove(0);
+                } else {
+                    if (stack.peek() == cnt) {
+                        // System.out.println("스택 pop : " + stack.pop());
+                        stack.pop();
+                        cnt++;
+                    } else if (stack.peek() < arr.get(0)) {
                         ans = 0;
+                        System.out.println("Sad");
                         break;
                     } else {
-                        stack.push(i + 1);
+                        // System.out.println("스택 push : " + arr.get(0));
+                        stack.push(arr.get(0));
+                        arr.remove(0);
                     }
                 }
-            } else {// 스택이 존재하지 않고 , 줄 첫번째도 cnt가 아니니 푸쉬
-                stack.push(arr.get(i));
+            } else if (cnt != stack.peek()) {// 비교할때는 peek써야지;;; pop말고.
+                ans = 0;
+                System.out.println("Sad");
+                break;
+            } else {
+                cnt++;
+                // System.out.println("스택 pop : " + stack.pop());
+                stack.pop();
             }
         }
         if (ans == 1)
