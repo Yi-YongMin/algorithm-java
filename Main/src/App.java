@@ -4,43 +4,51 @@ import java.io.*;
 public class App {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        // N개의 명령어
+        // 자료구조 개수 N개
         int N = Integer.parseInt(br.readLine());
         String str = br.readLine();
         StringTokenizer stringTokenizer = new StringTokenizer(str, " ");
-        LinkedList<Integer> arr = new LinkedList<>();
-        LinkedList<Integer> idxArr = new LinkedList<>();
-        String ans = "";
+
+        // 자료구조 수열
+        int[] structure = new int[N];
+        // 값을 넣어놓을 배열
+        int[] value = new int[N];
+
+        // 큐가 어느 인덱스에 있는지 확인하기 위한 idxArr
+        Deque<Integer> q = new ArrayDeque<>();
         for (int i = 0; i < N; i++) {
-            arr.add(Integer.parseInt(stringTokenizer.nextToken()));
-            idxArr.add(i + 1); // i번 인덱스에 i+1 이 들어있는 상태
+            structure[i] = Integer.parseInt(stringTokenizer.nextToken());
         }
-
-        int start = 0;
-
-        while (arr.size() != 1) {
-            // start는 항상 현재 사이즈보다 작아야 한다.
-            // 시작하는 풍선 인덱스와 값 확인
-            int idx = idxArr.get(start);
-            int moving = arr.get(start);
-
-            // ans 에 추가
-            ans += idx + " ";
-
-            // 해당 인덱스에 존재하는 것들 삭제
-            idxArr.remove(start);
-            arr.remove(start);
-
-            // start 최신화 -> 이동을 뜻 함
-            if (moving > 0) {
-                start = (start + moving - 1) % arr.size();
-            } else {
-                start = (start + moving) % arr.size();
-                if (start < 0)
-                    start += arr.size();
-            }
+        // System.out.println(Arrays.toString(structure));
+        str = br.readLine();
+        stringTokenizer = new StringTokenizer(str, " ");
+        for (int i = 0; i < N; i++) {
+            value[i] = Integer.parseInt(stringTokenizer.nextToken());
+            if (structure[i] == 0)
+                q.addLast(value[i]);
         }
-        ans += idxArr.poll();
+        // System.out.println(Arrays.toString(value));
+
+        int M = Integer.parseInt(br.readLine());
+        str = br.readLine();
+        stringTokenizer = new StringTokenizer(str, " ");
+
+        StringBuilder ans = new StringBuilder();
+        // 수열의 길이 M번만큼 반복을 해야 합니다.
+        // 시간초과 -> 큐만 따로 생각해야 함
+        for (int i = 0; i < M; i++) {
+            // 여행을 다닐 변수를 선언합니다. 수열 c의 값들이 여행을 시작하는 상황.
+            int traveler = Integer.parseInt(stringTokenizer.nextToken());
+
+            // 여행을 시작합니다.
+            q.addFirst(traveler);
+            traveler = q.pollLast();
+
+            // 여행이 끝난 traveler 은 , ans 에 추가합니다.
+            ans.append(traveler + " ");
+        }
+        ans.trim();
         System.out.println(ans);
+        br.close();
     }
 }
