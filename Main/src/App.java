@@ -4,51 +4,71 @@ import java.io.*;
 public class App {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        // 자료구조 개수 N개
-        int N = Integer.parseInt(br.readLine());
+        // 정점의 수 N (5 ≤ N ≤ 100,000), 간선의 수 M (1 ≤ M ≤ 200,000), 시작 정점 R (1 ≤ R ≤ N)이
+        // 주어진다.
         String str = br.readLine();
         StringTokenizer stringTokenizer = new StringTokenizer(str, " ");
+        int N = Integer.parseInt(stringTokenizer.nextToken()), M = Integer.parseInt(stringTokenizer.nextToken()),
+                R = Integer.parseInt(stringTokenizer.nextToken());
 
-        // 자료구조 수열
-        int[] structure = new int[N];
-        // 값을 넣어놓을 배열
-        int[] value = new int[N];
-
-        // 큐가 어느 인덱스에 있는지 확인하기 위한 idxArr
-        Deque<Integer> q = new ArrayDeque<>();
-        for (int i = 0; i < N; i++) {
-            structure[i] = Integer.parseInt(stringTokenizer.nextToken());
+        Stack<Node> stack = new Stack<>();
+        // N개의 노드를 그래프로 만들기
+        Node[] graph = new Node[N + 1];
+        for (int i = 1; i <= N; i++) {
+            graph[i] = new Node();
+            graph[i].idx = i;
         }
-        // System.out.println(Arrays.toString(structure));
-        str = br.readLine();
-        stringTokenizer = new StringTokenizer(str, " ");
-        for (int i = 0; i < N; i++) {
-            value[i] = Integer.parseInt(stringTokenizer.nextToken());
-            if (structure[i] == 0)
-                q.addLast(value[i]);
-        }
-        // System.out.println(Arrays.toString(value));
-
-        int M = Integer.parseInt(br.readLine());
-        str = br.readLine();
-        stringTokenizer = new StringTokenizer(str, " ");
-
-        StringBuilder ans = new StringBuilder();
-        // 수열의 길이 M번만큼 반복을 해야 합니다.
-        // 시간초과 -> 큐만 따로 생각해야 함
         for (int i = 0; i < M; i++) {
-            // 여행을 다닐 변수를 선언합니다. 수열 c의 값들이 여행을 시작하는 상황.
-            int traveler = Integer.parseInt(stringTokenizer.nextToken());
+            str = br.readLine();
+            stringTokenizer = new StringTokenizer(str, " ");
+            int first = Integer.parseInt(stringTokenizer.nextToken());
+            int second = Integer.parseInt(stringTokenizer.nextToken());
+            Node n1 = graph[first];
+            Node n2 = graph[second];
 
-            // 여행을 시작합니다.
-            q.addFirst(traveler);
-            traveler = q.pollLast();
-
-            // 여행이 끝난 traveler 은 , ans 에 추가합니다.
-            ans.append(traveler + " ");
+            // 만약 n1의 인접노드에 n2가 포함되어있지 않았다면,
+            if (!n1.adjacent.contains(n2))
+                graph[first].adjacent.add(graph[second]);
+            if (!n2.adjacent.contains(n1))
+                graph[second].adjacent.add(graph[first]);
         }
-        ans.trim();
-        System.out.println(ans);
-        br.close();
+
+        // 오름차순으로 정렬
+        for (int i = 1; i <= N; i++) {
+            graph[i].adjacent.sort((n1, n2) -> n1.idx - n2.idx);
+        }
+
+        // 방문 순서를 출력할 때 쓰일 변수 선언
+        int cnt = 1;
+        // 맨 처음에는 R부터 시작
+        graph[R].visited = cnt++;
+        stack.push(graph[R]);
+        // 근데 인접 노드는 낮은 숫자부터 오름차순으로 방문,,,?
+        while (!stack.isEmpty()) {
+            Node p = stack.pop();
+            for (Node n : p.adjacent) {
+                if (n.visited == 0) {
+                    n.visited = cnt++;
+                    stack.push(n);
+                }
+            }
+        }
+
+        for (int i = 1; i <= N; i++) {
+            System.out.println(graph[i].visited);
+        }
+    }
+}
+
+class Node implements Comparable<Node> {
+    int idx;
+    // 디폴트로 일단 방문 안한 것.
+    int visited = 0;
+    LinkedList<Node> adjacent = new LinkedList<>();
+
+    // 오름차순으로 출력하기 위한 compareTo 오버라이딩
+    @Override
+    public int compareTo(Node node) {
+        return this.idx - node.idx;
     }
 }
