@@ -6,14 +6,24 @@ public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        while (true) {
-            int n = Integer.parseInt(br.readLine());
-            if (n == 0)
-                break;
+        int N = Integer.parseInt(br.readLine());
+        ArrayList<Integer> arr = new ArrayList<>();
+        // 500,000 까지의 소수 전부 넣어버리기
+        for (int i = 2; i < 500000; i++) {
+            if (isPrime(i))
+                arr.add(i);
+        } // 2 3 5 7 11 13 17 19
+        int size = arr.size();
+        for (int i = 0; i < N; i++) {
+            int input = Integer.parseInt(br.readLine());
+            int halfOfInput = input / 2; // input은 무조건 짝수만 들어온다.
             int cnt = 0;
-            // n 초과 , 2n 이하인 소수들의 갯수
-            for (int i = n + 1; i < 2 * n + 1; i++) {
-                if (isPrime(i))
+            for (int j = 0; j < size; j++) {
+                int current = arr.get(j);
+                // 배열의 현재 인덱스 값이 인풋의 절반보다 크면 스탑
+                if (current > halfOfInput)
+                    break;
+                if (isPrime(input - current))
                     cnt++;
             }
             bw.write(cnt + "\n");
