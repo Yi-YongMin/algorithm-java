@@ -1,51 +1,65 @@
 import java.util.*;
 import java.io.*;
+import java.math.BigInteger;
 
 public class Main {
+    static int cnt = 0;
+    static int[] tmp;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        int N = Integer.parseInt(br.readLine());
-        ArrayList<Integer> arr = new ArrayList<>();
-        // 500,000 까지의 소수 전부 넣어버리기
-        for (int i = 2; i < 500000; i++) {
-            if (isPrime(i))
-                arr.add(i);
-        } // 2 3 5 7 11 13 17 19
-        int size = arr.size();
+        String input = br.readLine();
+        StringTokenizer st = new StringTokenizer(input, " ");
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        int[] arr = new int[N];
+        tmp = new int[N];
+        String str = br.readLine();
+        st = new StringTokenizer(str, " ");
         for (int i = 0; i < N; i++) {
-            int input = Integer.parseInt(br.readLine());
-            int halfOfInput = input / 2; // input은 무조건 짝수만 들어온다.
-            int cnt = 0;
-            for (int j = 0; j < size; j++) {
-                int current = arr.get(j);
-                // 배열의 현재 인덱스 값이 인풋의 절반보다 크면 스탑
-                if (current > halfOfInput)
-                    break;
-                if (isPrime(input - current))
-                    cnt++;
-            }
-            bw.write(cnt + "\n");
+            arr[i] = Integer.parseInt(st.nextToken());
+        }
+        mergeSort(arr, 0, N - 1, K);
+        // System.out.println(cnt);
+        if (cnt < K) {
+            bw.write(-1 + "\n");
             bw.flush();
         }
     }
 
-    static boolean isPrime(int N) {
-        if (N <= 1)
-            return false;
-        if (N <= 3)
-            return true;
-        if (N % 2 == 0 || N % 3 == 0)
-            return false;
-        int until = (int) Math.sqrt(N);
-        // 소수의 배수면 그것 또한 탈락
-        for (int i = 5; i <= until; i += 6) {
-            if (N % i == 0 || N % (i + 2) == 0)
-                return false;
+    // 4 5 1 3 2
+    public static void mergeSort(int[] arr, int p, int r, int K) {// arr 0 4 K
+        int q = p; // 0
+        if (p < r) {
+            q = (p + r) / 2; // 2
+            mergeSort(arr, p, q, K); // 0 2
+            mergeSort(arr, q + 1, r, K); // 3 4
+            merge(arr, p, q, r, K);
         }
-        // 앞에꺼 다 통과하면 소수맞다.
-        return true;
     }
 
+    public static void merge(int[] arr, int p, int q, int r, int K) {
+        int i = p;
+        int j = q + 1;
+        int t = 0;
+        while (i <= q && j <= r) {
+            if (arr[i] <= arr[j])
+                tmp[t++] = arr[i++];
+            else
+                tmp[t++] = arr[j++];
+        }
+        while (i <= q)
+            tmp[t++] = arr[i++];
+        while (j <= r)
+            tmp[t++] = arr[j++];
+        i = p;
+        t = 0;
+        while (i <= r) {
+            arr[i++] = tmp[t++];
+            cnt++;
+            if (cnt == K)
+                System.out.println(arr[i - 1]);
+        }
+    }
 }
