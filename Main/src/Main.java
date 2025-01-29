@@ -1,65 +1,67 @@
-import java.util.*;
 import java.io.*;
-import java.math.BigInteger;
+import java.util.*;
 
 public class Main {
-    static int cnt = 0;
-    static int[] tmp;
+    static int[] x_knight = { 1, 2, 2, 1, -1, -2, -2, -1 };
+    static int[] y_knight = { 2, 1, -1, -2, -2, -1, 1, 2 };
+    static int len; // l
+    static int[] cur = new int[2];
+    static int[] dest = new int[2];;
+    static String input;
+    static boolean[][] visited;
+    static int[][] map;
+    static Queue<int[]> q = new LinkedList<>();
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        String input = br.readLine();
-        StringTokenizer st = new StringTokenizer(input, " ");
-        int N = Integer.parseInt(st.nextToken());
-        int K = Integer.parseInt(st.nextToken());
-        int[] arr = new int[N];
-        tmp = new int[N];
-        String str = br.readLine();
-        st = new StringTokenizer(str, " ");
-        for (int i = 0; i < N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
+        int tc = Integer.parseInt(br.readLine());
+        for (int i = 0; i < tc; i++) {
+            len = Integer.parseInt(br.readLine());
+            visited = new boolean[len][len];
+            map = new int[len][len];
+            String input = br.readLine();
+            StringTokenizer st = new StringTokenizer(input, " ");
+            cur[0] = Integer.parseInt(st.nextToken());
+            cur[1] = Integer.parseInt(st.nextToken());
+            input = br.readLine();
+            st = new StringTokenizer(input, " ");
+            dest[0] = Integer.parseInt(st.nextToken());
+            dest[1] = Integer.parseInt(st.nextToken());
+            bfs();
         }
-        mergeSort(arr, 0, N - 1, K);
-        // System.out.println(cnt);
-        if (cnt < K) {
-            bw.write(-1 + "\n");
+    }
+
+    static void bfs() throws IOException {
+        if (cur[0] == dest[0] && cur[1] == dest[1]) {
+            bw.write(0 + "\n");
             bw.flush();
+            q.clear();
+            return;
         }
-    }
-
-    // 4 5 1 3 2
-    public static void mergeSort(int[] arr, int p, int r, int K) {// arr 0 4 K
-        int q = p; // 0
-        if (p < r) {
-            q = (p + r) / 2; // 2
-            mergeSort(arr, p, q, K); // 0 2
-            mergeSort(arr, q + 1, r, K); // 3 4
-            merge(arr, p, q, r, K);
-        }
-    }
-
-    public static void merge(int[] arr, int p, int q, int r, int K) {
-        int i = p;
-        int j = q + 1;
-        int t = 0;
-        while (i <= q && j <= r) {
-            if (arr[i] <= arr[j])
-                tmp[t++] = arr[i++];
-            else
-                tmp[t++] = arr[j++];
-        }
-        while (i <= q)
-            tmp[t++] = arr[i++];
-        while (j <= r)
-            tmp[t++] = arr[j++];
-        i = p;
-        t = 0;
-        while (i <= r) {
-            arr[i++] = tmp[t++];
-            cnt++;
-            if (cnt == K)
-                System.out.println(arr[i - 1]);
+        q.add(cur);
+        int[] next = new int[2];
+        while (!q.isEmpty()) {
+            next = q.poll();//
+            if (visited[next[0]][next[1]])
+                continue;
+            visited[next[0]][next[1]] = true;
+            for (int i = 0; i < 8; i++) {
+                int mvX = next[0] + x_knight[i];
+                int mvY = next[1] + y_knight[i];
+                if (mvX >= len || mvX < 0 || mvY >= len || mvY < 0)
+                    continue;
+                if (visited[mvX][mvY])
+                    continue;
+                q.add(new int[] { mvX, mvY });
+                map[mvX][mvY] = map[next[0]][next[1]] + 1;
+                if (mvX == dest[0] && mvY == dest[1]) {
+                    bw.write(map[mvX][mvY] + "\n");
+                    bw.flush();
+                    q.clear();
+                    return;
+                }
+            }
         }
     }
 }
